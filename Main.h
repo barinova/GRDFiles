@@ -2,10 +2,12 @@
 #include <windows.h>
 #include <fstream>
 #include <vector>
-
+#include "Dist\FreeImage.h"
 #pragma once
 
 using namespace std;
+
+void SaveImage();
 
 struct Point
 {
@@ -19,6 +21,7 @@ public:
 	CMain(const char *fileName);
 	~CMain(void);
 private:
+	double xMin, xMax, yMin, yMax, zMin, zMax;
 	vector<vector<double>> pointsGRD;
 	bool ReadGRDFile(const char* fileName);
 	void InitializePoints();

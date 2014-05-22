@@ -1,13 +1,19 @@
 #include "Main.h"
 
-int rows, columns;
-double xMin, xMax, yMin, yMax, zMin, zMax;
+
 vector<std::vector<Point>> points;
+int width, height;
+int rows, columns;
+bool isSaved;
 
 CMain::CMain(const char *fileName)
 {
 	if (fileName)
 	{
+		//set BMPs size
+		isSaved = false;
+		width = 600;
+		height = 400;
 		if (ReadGRDFile(fileName))
 		{
 			InitializePoints();
@@ -95,8 +101,26 @@ void Draw()
     glPopMatrix();
     glutSwapBuffers();
     glutPostRedisplay();
+	SaveImage();
 }
 
+void SaveImage()
+{
+	// Make the BYTE array, factor of 3 because it's RBG.
+	
+	BYTE* pixels = new BYTE[ 3 * width * height];;
+	glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+	// Convert to FreeImage format & save to file
+	FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, width, height, 3 * width, 24, FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK, FI_RGBA_BLUE_MASK, TRUE);
+	FreeImage_Save(FIF_BMP, image, "C:/GRD.bmp", 0);
+
+
+
+	// Free resources
+	FreeImage_Unload(image);
+	delete [] pixels;
+}
 
 int main(int argc, char* argv[])
 {
@@ -107,7 +131,7 @@ int main(int argc, char* argv[])
     glutInitWindowSize(640,480);
     glutCreateWindow("GRD");
 	glutDisplayFunc(Draw);
-	glutMainLoop();
 
+	glutMainLoop();
     return 0;
 }
